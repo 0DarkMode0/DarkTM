@@ -1,0 +1,62 @@
+const Discord = require('discord.js');
+const Kitsu = require('kitsu.js');
+const kitsu = new Kitsu();
+var aq = require('animequote');
+const fetch = require("node-fetch")
+const translate = require('@k3rn31p4nic/google-translate-api');
+
+
+module.exports = {
+
+  name:"anime",
+  category:"Gerais",
+  aliases: ['infoanime', 'animeinfo'],
+  
+  run: async (bot, message, args) => {
+
+    message.delete();
+
+   if (!args[0]) {
+     return message.channel.send("Qual o nome do Anime");
+      
+    }
+
+    var search = message.content.split(/\s+/g).slice(1).join(" ");
+      kitsu.searchAnime(search).then(async result => {
+        if (result.length === 0) {
+          return message.channel.send(`Nenhum resultado para **${search}**!`);
+        }
+          
+          var anime = result[0]
+          
+            
+          translate(anime.synopsis.replace(/<[^>]*>/g, '').split('\n')[0], { from: 'en', to: 'pt' }).then(res => {
+
+          let embed = new Discord.MessageEmbed()
+                
+                .setAuthor(`${anime.titles.english ? anime.titles.english : search} | ${anime.showType}`, anime.posterImage.original)
+
+                .setDescription(res.text)
+                .setColor('#010101')
+                .addField('❯\u2000\Informação', `•\u2000\**Nome em japones:** ${anime.titles.romaji}\n•\u2000\**Etária:**\n${anime.ageRating}\n•\u2000\**NSFW:**\n${anime.nsfw ? 'Sim' : 'Não'}`, true)
+                .addField('❯\u2000\Estatísticas', `•\u2000\**Rank média:**\n${anime.averageRating}\n•\u2000\**Rank:**\n${anime.ratingRank}\n•\u2000\**Rank de popularidade:**\n${anime.popularityRank}`, true)
+                .addField('❯\u2000\Status', `•\u2000\**Episodios:**\n${anime.episodeCount ? anime.episodeCount : 'N/A'}\n•\u2000\**Data de início:**\n${anime.startDate}\n•\u2000\**Data do fim:**\n${anime.endDate ? anime.endDate : "Em lançamento"}`, true)
+                .setThumbnail(anime.posterImage.original, 100, 200)
+                .setFooter(` | Requisitado por: ${message.author.tag}`, message.author.displayAvatarURL({format: "png"}))
+          
+          
+          return message.channel.send({ embed })
+  
+          }).catch(err => {
+            console.error(err);
+          });
+            
+            
+          
+        }).catch(err => {
+            console.log(err)
+            return message.channel.send(`Nenhum resultado para **${search}**!`);
+        });
+    }
+
+}

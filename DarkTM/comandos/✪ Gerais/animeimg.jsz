@@ -1,0 +1,52 @@
+const Discord = require('discord.js');
+const Kitsu = require('kitsu.js');
+const kitsu = new Kitsu();
+var aq = require('animequote');
+const fetch = require("node-fetch")
+
+
+
+module.exports = {
+
+    name:"animeimg",
+    category:"Gerais",
+    aliases: [''],
+  
+  run: async (bot, message, args) => {
+   
+   message.delete();
+
+   if (!args[0]) {
+     return message.channel.send("Me de o nome do anime");
+      
+    }
+        var search = message.content.split(/\s+/g).slice(1).join(" ");
+        kitsu.searchAnime(search).then(async result => {
+            if (result.length === 0) {
+                return message.channel.send(`Nenhum resultado para **${search}**!`);
+            }
+          
+          var anime = result[0]
+
+            
+            
+            
+            let embed = new Discord.MessageEmbed()
+                
+                
+                
+                .setColor('#010101')
+                .setDescription(`**${anime.titles.romaji}**`)
+                .setImage(anime.posterImage.original, 512, 512)
+                .setFooter(` | Requisitado por: ${message.author.tag}`, message.author.displayAvatarURL({format: "png"}))
+          
+
+            return message.channel.send({ embed })
+            message.delete();
+        }).catch(err => {
+            console.log(err)
+            return message.channel.send(`Sem resultado para **${search}**!`);
+        });
+    }
+
+}
