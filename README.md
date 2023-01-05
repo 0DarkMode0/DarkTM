@@ -26,6 +26,7 @@ Invite | Versão | Discord.JS | Criado
 - [x] Moderação
 - [x] Diversão
 - [x] Minecraft
+- [x] Hentai
 
 ﾠ
 
